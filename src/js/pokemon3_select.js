@@ -1,74 +1,118 @@
-const { render } = require("react-dom");
+import React, { useContext } from "react";
 
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Form from 'react-bootstrap/Form'
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
-export default class Pokemon3Select extends React.Component {
-    constructor(props) {
-        super(props);
+import { PokeContext } from "./pokemon_ctx";
+import PokemonSelect from "./pokemon_select";
+
+const Pokemon3Select = ({ pokemons, handleSelPkm }) => {
+  const { selPkm1, selPkm2, selPkm3 } = useContext(PokeContext);
+
+  const arrangeByRole = (pokemons, roles) => {
+    let groupedPokemons = [];
+    if (pokemons && roles)
+      for (let role of roles) {
+        groupedPokemons.push({
+          label: role,
+          background: roleColour(role),
+          options: pokemons
+            .filter((pkm) => pkm.tags.role == role)
+            .map((pkm) => ({
+              label: pkm.name,
+              value: pkm.name,
+              image: pkm.thumbnail,
+              background: roleColour(pkm.tags.role),
+            })),
+        });
+      }
+    return groupedPokemons;
+  };
+
+  const roleColour = (role) => {
+    let color;
+    switch (role) {
+      case "All-Rounder":
+        color = "#8134a0";
+        break;
+      case "Attacker":
+        color = "#db5824";
+        break;
+      case "Defender":
+        color = "#6dd82f";
+        break;
+      case "Speedster":
+        color = "#1d7cca";
+        break;
+      case "Supporter":
+        color = "#e0c034";
+        break;
     }
+    return color;
+  };
 
-    roleColour(role){
-        let color;
-        switch(role){
-            case 'All-Rounder':
-                color = '#8134a0';
-                break;
-            case 'Attacker':
-                color = '#db5824';
-                break;
-            case 'Defender':
-                color = '#6dd82f';
-                break;
-            case 'Speedster':
-                color = '#1d7cca';
-                break;
-            case 'Supporter':
-                color = '#e0c034';
-                break;
-        }
-        return color;
-    }
+  // const filterOutPkm = (pkm)
+  let roles =
+    pokemons &&
+    pokemons.length > 0 &&
+    pokemons.reduce((total, current, index) => {
+      if (index === 0) return [current.tags.role];
+      else if (current.tags.role !== pokemons[index - 1].tags.role)
+        return [...total, current.tags.role];
+      else return total;
+    }, []);
 
-    render(){
-        let pokemons1 = this.props.pokemons.filter((pkm) => ((this.props.selPkm2 == undefined || this.props.selPkm2.name != pkm.name) && (this.props.selPkm3 == undefined || this.props.selPkm3.name != pkm.name)))
-        let pokemons2 = this.props.pokemons.filter((pkm) => ((this.props.selPkm1 == undefined || this.props.selPkm1.name != pkm.name) && (this.props.selPkm3 == undefined || this.props.selPkm3.name != pkm.name)))
-        let pokemons3 = this.props.pokemons.filter((pkm) => ((this.props.selPkm2 == undefined || this.props.selPkm2.name != pkm.name) && (this.props.selPkm1 == undefined || this.props.selPkm1.name != pkm.name)))
+  const pokemons1 = pokemons.filter(
+    (pkm) =>
+      (selPkm2 == undefined || selPkm2.name != pkm.name) &&
+      (selPkm3 == undefined || selPkm3.name != pkm.name)
+  );
+  const groupedPokemons1 = arrangeByRole(pokemons1, roles);
 
-        return(
-            <Row className={"text-center text-white"}>
-                <Col>
-                    <h4>Pokémon 1</h4>
-                    <Form.Select className={"text-center"} aria-label="Select Pokémon 1" onChange={(e) => this.props.handleSelPkm(1, e.target.value)}>
-                        <option value="">-</option>
-                        {pokemons1.map(pkm => (
-                            <option key={pkm.name + 1} value={pkm.name}  className={"text-white"} style={{ background: this.roleColour(pkm.tags.role)}}>{pkm.name}</option>
-                        ))}
-                    </Form.Select>
-                </Col>
+  const pokemons2 = pokemons.filter(
+    (pkm) =>
+      (selPkm1 == undefined || selPkm1.name != pkm.name) &&
+      (selPkm3 == undefined || selPkm3.name != pkm.name)
+  );
+  const groupedPokemons2 = arrangeByRole(pokemons2, roles);
 
-                <Col>
-                    <h4>Pokémon 2</h4>
-                    <Form.Select className={"text-center"} aria-label="Select Pokémon 2" onChange={(e) => this.props.handleSelPkm(2, e.target.value)}>
-                        <option value="">-</option>
-                        {pokemons2.map(pkm => (
-                            <option key={pkm.name + 2} value={pkm.name}  className={"text-white"} style={{ background: this.roleColour(pkm.tags.role)}}>{pkm.name}</option>
-                        ))}
-                    </Form.Select>
-                </Col>
+  const pokemons3 = pokemons.filter(
+    (pkm) =>
+      (selPkm2 == undefined || selPkm2.name != pkm.name) &&
+      (selPkm1 == undefined || selPkm1.name != pkm.name)
+  );
+  const groupedPokemons3 = arrangeByRole(pokemons3, roles);
 
-                <Col>
-                    <h4>Pokémon 3</h4>
-                    <Form.Select className={"text-center"} aria-label="Select Pokémon 3" onChange={(e) => this.props.handleSelPkm(3, e.target.value)}>
-                        <option value="">-</option>
-                        {pokemons3.map(pkm => (
-                            <option key={pkm.name + 3} value={pkm.name} className={"text-white"} style={{ background: this.roleColour(pkm.tags.role)}}>{pkm.name}</option>
-                        ))}
-                    </Form.Select>
-                </Col>
-            </Row>
-        )
-    }
+  return (
+    <Row className={"text-white"}>
+      <Col>
+        <h4 className={"text-center"}>Pokémon 1</h4>
+        <PokemonSelect
+          options={groupedPokemons1}
+          onChange={(opt) => handleSelPkm(1, opt.value)}
+          aria={"Select Pokémon 1"}
+        />
+      </Col>
 
-}
+      <Col>
+        <h4 className={"text-center"}>Pokémon 2</h4>
+        <PokemonSelect
+          options={groupedPokemons2}
+          onChange={(opt) => handleSelPkm(2, opt.value)}
+          aria={"Select Pokémon 2"}
+        />
+      </Col>
+
+      <Col>
+        <h4 className={"text-center"}>Pokémon 3</h4>
+        <PokemonSelect
+          options={groupedPokemons3}
+          onChange={(opt) => handleSelPkm(3, opt.value)}
+          aria={"Select Pokémon 3"}
+        />
+      </Col>
+    </Row>
+  );
+};
+
+export default Pokemon3Select;

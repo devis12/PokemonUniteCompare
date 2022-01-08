@@ -1,24 +1,32 @@
-const { render } = require("react-dom");
-
 export default class Pokemon3td extends React.Component {
-    constructor(props) {
-        super(props);
-    }
+  constructor(props) {
+    super(props);
+  }
 
-    render(){
-        return(
-            <td>
-                <span className={this.props.selPkm1Class}>
-                    {((this.props.selPkm1)? this.props.selPkm1.stats[this.props.pkmLevel][this.props.stat] + " " : "")}
-                </span>
-                <span className={this.props.selPkm2Class}>
-                    {((this.props.selPkm2)? this.props.selPkm2.stats[this.props.pkmLevel][this.props.stat] + " " : "")}
-                </span>
-                <span className={this.props.selPkm3Class}>
-                    {((this.props.selPkm3)? this.props.selPkm3.stats[this.props.pkmLevel][this.props.stat] + " " : "")}
-                </span>
-            </td>
-        )
-    }
+  render() {
+    const {
+      stat,
+      pkmLevel,
+      selPkm1,
+      selPkm2,
+      selPkm3,
+      selPkm1Class,
+      selPkm2Class,
+      selPkm3Class,
+    } = this.props;
 
+    return (
+      <td>
+        <span className={selPkm1Class}>
+          {selPkm1 ? selPkm1.stats[pkmLevel][stat] + " " : ""}
+        </span>
+        <span className={selPkm2Class}>
+          {selPkm2 ? selPkm2.stats[pkmLevel][stat] + " " : ""}
+        </span>
+        <span className={selPkm3Class}>
+          {selPkm3 ? selPkm3.stats[pkmLevel][stat] + " " : ""}
+        </span>
+      </td>
+    );
+  }
 }
